@@ -16,14 +16,14 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - name: Test
         run: cargo test --locked --all-targets
-      - name: Build local application bundle
-        run: scripts/bundle-macos.sh
-      - name: Archive application
-        run: ditto -c -k --sequesterRsrc --keepParent dist/Lingo.app dist/Lingo-macOS.zip
+      - name: Build and archive application
+        run: scripts/package-macos.sh
       - name: Upload bundle for the runner architecture
         uses: actions/upload-artifact@v4
         with:
           name: Lingo-macOS-${{ runner.arch }}
-          path: dist/Lingo-macOS.zip
+          path: |
+            dist/Lingo-v*-macos-*.zip
+            dist/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 14

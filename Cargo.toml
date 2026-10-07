@@ -3,9 +3,13 @@ name = "lingo"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.88"
-description = "Select, translate, keep writing. A small Rust desktop translator powered by your LLM."
+description = "Lightweight Rust desktop translator with in-place text replacement, DeepSeek Flash, and configurable OpenAI-compatible providers."
 license = "MIT"
 repository = "https://github.com/Finn-Fengming/Lingo"
+homepage = "https://github.com/Finn-Fengming/Lingo"
+readme = "README.md"
+keywords = ["translation", "llm", "macos", "deepseek", "desktop"]
+categories = ["gui", "text-processing"]
 
 [dependencies]
 anyhow = "1"

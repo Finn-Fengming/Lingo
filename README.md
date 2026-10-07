@@ -1,33 +1,60 @@
 # Lingo
 
-**Select text. Translate. Keep writing.**
+**Your words, in another language. Right where you write.**
 
-Lingo is a small Rust desktop app that translates selected text inside supported macOS text fields with an LLM. Hold **Option** while dragging to select a passage, or select text and press **⌘⇧L**. English is the default target; choose Traditional Chinese, Japanese, or your own language in settings.
+Lingo is a lightweight Rust app for translating the text you already wrote. Translate a phrase or an entire draft with your own LLM provider, choose a default language, and keep writing. It includes a text workbench and macOS integration for translating selections inside supported apps.
 
-[简体中文](README.zh-CN.md) · [Design research](docs/research.md) · [Architecture](docs/architecture.md) · [Test evidence](docs/testing.md)
+[简体中文](README.zh-CN.md) · [Download v0.1.0](https://github.com/Finn-Fengming/Lingo/releases/tag/v0.1.0) · [Changelog](CHANGELOG.md) · [Architecture](docs/architecture.md) · [Test evidence](docs/testing.md)
+
+**v0.1.0 is a public preview.** The workbench and live DeepSeek translation have been tested. Cross-app gestures, replacement, and undo are implemented but **have not been verified end to end**. Compatibility depends on each app's Accessibility support.
 
 ## What it does
 
-- Translates existing text in place through macOS Accessibility APIs.
-- Provides a workbench for pasting, translating, and copying text when an app does not support direct replacement.
-- Uses an OpenAI-compatible Chat Completions endpoint. DeepSeek Flash is the default provider and model.
-- Lets you configure the provider URL, model, and target language.
-- Keeps the application in Rust, including its `egui` / `eframe` interface. No JavaScript runtime or traditional machine-translation service is required.
+- **Translate just what you need.** Select a passage or translate the whole draft in the workbench, then copy the result or replace the original text.
+- **Choose your language.** English is the default; switch to Traditional Chinese, Japanese, other presets, or a custom target.
+- **Bring your own model.** Start with DeepSeek Flash or configure another OpenAI-compatible Chat Completions endpoint.
+- **Stay close to your writing.** Option-drag and **⌘⇧L** invoke the native integration; the menu bar offers pause, cancel, and guarded undo.
+- **Keep the client small.** The application and its `egui` / `eframe` interface are written in Rust, with no JavaScript runtime or traditional machine-translation service.
 
-This is an early macOS release. Text-field compatibility depends on the host application's Accessibility implementation. Rich editors, terminals, protected fields, and custom canvas interfaces may not support selection or replacement. Use the workbench in those cases.
+Lingo works with existing text and does not need microphone access. The interaction research behind the project is in [design notes](docs/research.md).
+
+## Download and install
+
+The first preview provides an **Apple Silicon (arm64)** macOS app:
+
+- [Lingo-v0.1.0-macos-arm64.zip](https://github.com/Finn-Fengming/Lingo/releases/download/v0.1.0/Lingo-v0.1.0-macos-arm64.zip)
+- [SHA256SUMS.txt](https://github.com/Finn-Fengming/Lingo/releases/download/v0.1.0/SHA256SUMS.txt)
+- [Release notes and assets](https://github.com/Finn-Fengming/Lingo/releases/tag/v0.1.0)
+
+The bundle declares macOS **12.0 or later**; actual testing was on **macOS 26.4.1, Apple Silicon**. There are no Intel, Windows, or Linux binaries in this release.
+
+1. Download and extract the ZIP, then drag **Lingo.app** into **Applications**.
+2. Open Lingo, go to **偏好设置** (Preferences), enter your own API key, and save. DeepSeek Flash is preconfigured.
+3. Choose a target language and try a short passage in the workbench.
+4. To try the native integration, enable **Accessibility** and **Input Monitoring** for Lingo in **System Settings → Privacy & Security**, then restart the app.
+
+This preview is **ad-hoc signed and is not notarized by Apple**. macOS may block the downloaded app. Building from source is also available below. No credentials are included in the download.
+
+To verify the download, place the ZIP and checksum file in the same folder and run:
+
+```sh
+shasum -a 256 -c SHA256SUMS.txt
+```
 
 ## Run from source
 
-Install [Rust 1.88 or newer](https://www.rust-lang.org/tools/install) and Apple's command-line developer tools. From the repository:
+Install [Rust 1.88 or newer](https://www.rust-lang.org/tools/install) and Apple's command-line developer tools:
 
 ```sh
-cargo run --release
+git clone https://github.com/Finn-Fengming/Lingo.git
+cd Lingo
+cargo run --release --locked
 ```
 
 Configure your provider and API key in the app. For development, an explicit environment file is also supported:
 
 ```sh
-cargo run --release -- --env-file /absolute/path/to/.env
+cargo run --release --locked -- --env-file /absolute/path/to/.env
 ```
 
 The file should contain a key obtained from your provider:
@@ -36,18 +63,15 @@ The file should contain a key obtained from your provider:
 DEEPSEEK_API_KEY=replace-with-your-own-key
 ```
 
-Keep this file outside the repository. Never put a real key in an issue, screenshot, commit, or command-line argument. The repository does not contain a usable API key.
+Keep this file outside the repository. Do not include real keys in issues, screenshots, commits, or command-line arguments.
 
 ## Translate where you write
 
-1. Launch Lingo and configure a key and target language.
-2. In **System Settings → Privacy & Security**, enable **Accessibility** and **Input Monitoring** for the running app. After changing permission, restart Lingo if the trigger is still unavailable. When running from a terminal, macOS may list the terminal or development binary rather than the bundled app.
-3. In another app, hold **Option**, drag across text in an editable field, and release. Or select text normally and press **⌘⇧L**.
-4. Leave the field and selection unchanged while translation runs. Lingo checks the original selection before replacing it.
+After setup and permission grants, hold **Option**, drag across text in a supported editable field, and release. Alternatively, select text normally and press **⌘⇧L**. Leave the field and selection unchanged while translation runs; Lingo checks the original target before replacing it.
 
-The drag gesture means **drag to select text**, not moving a text object into another window. Option-drag can have special behavior in some editors; use the keyboard shortcut or workbench there. Lingo never needs microphone access.
+The gesture means **drag to select text**. Some editors assign their own behavior to Option-drag. Rich editors, terminals, protected fields, and custom canvas interfaces may not expose a usable selection; use the workbench in those cases. When running from a terminal, macOS may assign permissions to the terminal or development binary rather than the bundled app.
 
-If the focused app or selection changes while translation runs, Lingo leaves the field alone and makes the result available in its workbench. Copy it when you are ready. If a field cannot be read or edited through Accessibility, paste its text into the workbench to translate it there. Review translations before sending important messages.
+The native integration is designed to refuse replacement when the focused control, selection, or original text changes. A completed result remains available in the workbench if replacement cannot finish. If the initial field cannot be read or edited, paste its text into the workbench. These safeguards still need cross-app end-to-end verification in this preview. Review translations before sending important messages.
 
 Closing the window keeps Lingo running in the menu bar. Use its menu to reopen the workbench, pause global translations, cancel a pending replacement, undo the last unchanged replacement, or quit. Cancel discards the eventual result; it cannot recall text already sent to the provider or prevent charges for an in-flight request. Undo requires the original field and unchanged content to remain available.
 
@@ -99,13 +123,14 @@ cargo fmt --all -- --check
 cargo clippy --all-targets -- -D warnings
 cargo test --all-targets
 scripts/bundle-macos.sh
+scripts/package-macos.sh
 ```
 
-CI runs format, lint, and test checks on macOS without provider credentials. Live-provider and real-application interaction checks are separate from those automated checks. The bundle script builds a local `.app`; distributing a trusted macOS binary requires signing and notarization with your own Apple developer identity.
+The initial verification includes **19 unit/mock tests**, **4 explicit live DeepSeek tests**, and manual workbench checks. GitHub CI passed formatting, lint, and tests on stable Rust, plus all-target compilation on the minimum supported Rust **1.88**. Live tests use separate credentials and are ignored by default. See [test evidence and reproduction steps](docs/testing.md) for exact coverage and remaining work.
 
-See [test evidence and reproduction steps](docs/testing.md) for verified results and remaining work. Cross-application gestures, replacement, and undo have **not yet been verified end to end**; they require macOS permissions on the test machine.
+The bundle script builds and ad-hoc signs a local `.app`. The package script builds the app and creates a versioned ZIP plus `SHA256SUMS.txt` in `dist/`. Developer ID signing and Apple notarization are separate distribution steps requiring the maintainer's Apple identity.
 
-The **Build macOS bundle** GitHub Actions workflow can be run manually and also runs for `v*` tags. It uploads a ZIP for the runner's architecture as a workflow artifact; it does not publish a GitHub Release or notarize the app.
+The **Build macOS bundle** GitHub Actions workflow can be run manually and also runs for `v*` tags. It uploads a ZIP for the runner's architecture and its checksum file as workflow artifacts; it does not automatically publish a GitHub Release or notarize the app.
 
 Contributions to application compatibility, provider adapters, accessibility, and other desktop platforms are welcome. Please include the macOS version, affected app, reproduction steps, and redacted diagnostics in bug reports. Do not include private source text or API keys.
 

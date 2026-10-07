@@ -6,11 +6,12 @@ if [[ "$(uname -s)" != Darwin ]]; then
   exit 1
 fi
 cargo build --release --locked
-bundle="dist/Lingo.app"
+version="$(cargo pkgid --offline | sed 's/.*[@#]//')"
+bundle="${LINGO_DIST_DIR:-dist}/Lingo.app"
 mkdir -p "$bundle/Contents/MacOS" "$bundle/Contents/Resources"
 cp target/release/lingo "$bundle/Contents/MacOS/Lingo"
 cp assets/Lingo.icns "$bundle/Contents/Resources/Lingo.icns"
-cat > "$bundle/Contents/Info.plist" <<'PLIST'
+cat > "$bundle/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
@@ -20,8 +21,10 @@ cat > "$bundle/Contents/Info.plist" <<'PLIST'
   <key>CFBundleExecutable</key><string>Lingo</string>
   <key>CFBundleIconFile</key><string>Lingo</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>0.1.0</string>
-  <key>CFBundleVersion</key><string>1</string>
+  <key>CFBundleShortVersionString</key><string>${version}</string>
+  <key>CFBundleVersion</key><string>${version}</string>
+  <key>CFBundleGetInfoString</key><string>Lingo ${version} — LLM translation where you write.</string>
+  <key>NSHumanReadableCopyright</key><string>Copyright © 2026 Finn Fengming. MIT License.</string>
   <key>LSMinimumSystemVersion</key><string>12.0</string>
   <key>NSHighResolutionCapable</key><true/>
   <key>NSAccessibilityUsageDescription</key><string>Lingo reads and replaces text that you explicitly select for translation.</string>
