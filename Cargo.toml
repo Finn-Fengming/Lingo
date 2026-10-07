@@ -1,0 +1,28 @@
+[package]
+name = "lingo"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+description = "Select, translate, keep writing. A small Rust desktop translator powered by your LLM."
+license = "MIT"
+repository = "https://github.com/Finn-Fengming/Lingo"
+
+[dependencies]
+anyhow = "1"
+directories = "6"
+dotenvy = "0.15"
+eframe = { version = "0.33.3", default-features = false, features = ["accesskit", "default_fonts", "glow", "x11", "wayland"] }
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+url = "2"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+keyring = { version = "3", features = ["apple-native"] }
+tray-icon = "0.24.2"
+
+[profile.release]
+lto = "thin"
+strip = true
+codegen-units = 1
