@@ -6,6 +6,10 @@ Lingo is a lightweight Rust app for translating the text you already wrote. Tran
 
 [简体中文](README.zh-CN.md) · [Download v0.1.0](https://github.com/Finn-Fengming/Lingo/releases/tag/v0.1.0) · [Changelog](CHANGELOG.md) · [Architecture](docs/architecture.md) · [Test evidence](docs/testing.md)
 
+![Lingo: select Chinese text, press ⌘⇧L, and replace it with an English translation](assets/lingo-promo.gif)
+
+*Interaction illustration: select text → press ⌘⇧L → replace in place. Requires a supported editable text field.*
+
 **v0.1.0 is a public preview.** The workbench and live DeepSeek translation have been tested. Cross-app gestures, replacement, and undo are implemented but **have not been verified end to end**. Compatibility depends on each app's Accessibility support.
 
 ## What it does

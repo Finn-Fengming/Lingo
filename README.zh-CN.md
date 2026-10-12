@@ -6,6 +6,10 @@ Lingo 是一个用 Rust 编写的轻量翻译应用，将你已经写好的文�
 
 [English](README.md) · [下载 v0.1.0](https://github.com/Finn-Fengming/Lingo/releases/tag/v0.1.0) · [更新记录](CHANGELOG.md) · [架构说明](docs/architecture.md) · [测试记录](docs/testing.md)
 
+![Lingo：选中中文，按下 ⌘⇧L，将原文原位替换为英文](assets/lingo-promo.gif)
+
+*交互示意：选中文字 → 按下 ⌘⇧L → 原位替换。需要支持的可编辑输入框。*
+
 **v0.1.0 为公开预览版。** 工作台和真实 DeepSeek 翻译已经测试；跨应用手势、原位替换和撤销已经实现，但**尚未完成端到端验证**。实际兼容性取决于目标应用对 macOS 辅助功能的支持。
 
 ## 功能
